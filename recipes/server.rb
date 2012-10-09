@@ -67,7 +67,11 @@ else
   end
 end
 
-nodes = search(:node, "hostname:[* TO *] AND chef_environment:#{node.chef_environment}")
+#nodes = search(:node, "hostname:[* TO *] AND chef_environment:#{node.chef_environment}")
+nodes = search(:node, "hostname:[* TO *]")
+
+log nodes.to_json
+log nodes.class
 
 if nodes.empty?
   Chef::Log.info("No nodes returned from search, using this node so hosts.cfg has data")
@@ -75,9 +79,26 @@ if nodes.empty?
   nodes << node
 end
 
+
+module Enumerable
+      def group_by &b
+        h = Hash.new{|h,k| h[k] = []}
+        each{|x| h[x.instance_eval(&b)] << x}
+        h.values
+      end
+end  
+groups = nodes.group_by{ |d| d[:hostname] }
+new_nodes = Array.new
+groups.each do |group|
+	if group.last.last.chef_environment == "production"
+		new_nodes << group.last.last
+	end
+end
+
+nodes = new_nodes
+
 # find all unique platforms to create hostgroups
 os_list = Array.new
-
 nodes.each do |n|
 	if !os_list.include?(n['os'])
 		os_list << n['os']
@@ -122,7 +143,8 @@ role_list = Array.new
 service_hosts= Hash.new
 search(:role, "*:*") do |r|
   role_list << r.name
-  search(:node, "role:#{r.name} AND chef_environment:#{node.chef_environment}") do |n|
+  #search(:node, "role:#{r.name} AND chef_environment:#{node.chef_environment}") do |n|
+  search(:node, "role:#{r.name}") do |n|
     service_hosts[r.name] = n['hostname']
   end
 end
