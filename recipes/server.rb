@@ -70,9 +70,6 @@ end
 #nodes = search(:node, "hostname:[* TO *] AND chef_environment:#{node.chef_environment}")
 nodes = search(:node, "hostname:[* TO *]")
 
-log nodes.to_json
-log nodes.class
-
 if nodes.empty?
   Chef::Log.info("No nodes returned from search, using this node so hosts.cfg has data")
   nodes = Array.new
