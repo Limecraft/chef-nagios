@@ -22,3 +22,6 @@ default['nagios']['user'] = "nagios"
 default['nagios']['group'] = "nagios"
 
 default['nagios']['plugin_dir'] = "/usr/lib/nagios/plugins"
+if platform?("redhat", "centos") and node['kernel']['machine'] == 'x86_64' then
+	default['nagios']['plugin_dir'] = "/usr/lib64/nagios/plugins"
+end
