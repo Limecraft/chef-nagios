@@ -76,7 +76,6 @@ if nodes.empty?
   nodes << node
 end
 
-
 module Enumerable
       def group_by &b
         h = Hash.new{|h,k| h[k] = []}
@@ -87,7 +86,7 @@ end
 groups = nodes.group_by{ |d| d[:hostname] }
 new_nodes = Array.new
 groups.each do |group|
-	if group.last.last.chef_environment == "production"
+	if group.last.last.chef_environment == "#{node['nagios']['environment']}"
 		new_nodes << group.last.last
 	end
 end
