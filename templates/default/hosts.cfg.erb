@@ -10,7 +10,6 @@
 #}
 
 <% @nodes.each do |n| -%>
-<% unless n.name == node.name -%>
 define host {
   use server
   address <%= n['ipaddress'] %>
@@ -21,6 +20,5 @@ define host {
   hostgroups <%= n.run_list.roles.to_a.join(",") %>,<%= n['os'] %>
 <% end -%>
 }
-<% end -%>
 
 <% end -%>
